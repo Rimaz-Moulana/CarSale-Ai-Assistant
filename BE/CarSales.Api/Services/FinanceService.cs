@@ -85,10 +85,14 @@ public sealed class FinanceService
 
     public async Task<IReadOnlyList<ExpenseBreakdownItem>> GetExpenseBreakdownAsync()
     {
-        var expenseBreakdown = await _context.Expenses
+        var rawBreakdown = await _context.Expenses
             .GroupBy(e => e.Category)
-            .Select(g => new ExpenseBreakdownItem(g.Key, g.Sum(e => e.Amount), GetCategoryColor(g.Key)))
+            .Select(g => new { Category = g.Key, Total = g.Sum(e => e.Amount) })
             .ToListAsync();
+
+        var expenseBreakdown = rawBreakdown
+            .Select(g => new ExpenseBreakdownItem(g.Category, g.Total, GetCategoryColor(g.Category)))
+            .ToList();
 
         return expenseBreakdown;
     }
@@ -117,12 +121,16 @@ public sealed class FinanceService
     {
         var metrics = await GetFinanceMetricsAsync();
 
-        var vehicleCategories = await _context.Cars
+        var rawCategories = await _context.Cars
             .GroupBy(c => c.Brand)
-            .Select(g => new VehicleCategoryItem(g.Key, g.Count(), GetBrandColor(g.Key)))
-            .OrderByDescending(g => g.Value)
+            .Select(g => new { Brand = g.Key, Count = g.Count() })
+            .OrderByDescending(g => g.Count)
             .Take(6)
             .ToListAsync();
+
+        var vehicleCategories = rawCategories
+            .Select(g => new VehicleCategoryItem(g.Brand, g.Count, GetBrandColor(g.Brand)))
+            .ToList();
 
         var now = DateTime.UtcNow;
         var startDate = now.AddMonths(-5);

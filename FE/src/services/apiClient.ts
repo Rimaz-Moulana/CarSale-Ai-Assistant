@@ -9,7 +9,7 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, // 10 seconds timeout
+  timeout: 120000, // 120 seconds timeout for AI generation
 });
 
 // Response Interceptor for centralized error handling

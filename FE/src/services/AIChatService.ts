@@ -1,21 +1,47 @@
 import { apiClient } from './apiClient';
-import type { ChatMessage } from './types';
 
-interface AiChatResponse {
+export interface ChatMessage {
+  id?: string;
+  role: 'user' | 'assistant';
   content: string;
 }
 
-export class AIChatService {
-  private static endpoint = 'ai/chat';
+export interface AiChatResponse {
+  content: string;
+  sessionId: string;
+}
 
-  static async sendMessage(message: string, history: ChatMessage[] = []): Promise<AiChatResponse> {
-    return apiClient.post<any, AiChatResponse>(this.endpoint, {
-      message,
-      history: history.map(({ role, content }) => ({ role, content }))
-    });
+export interface ChatSession {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  messages?: ChatMessage[];
+}
+
+export class AIChatService {
+  private static endpoint = 'ai/sessions';
+
+  static async getSessions(): Promise<ChatSession[]> {
+    return apiClient.get<any, ChatSession[]>(this.endpoint);
   }
 
-  static async getChatHistory(): Promise<{ id: string, title: string }[]> {
-    return apiClient.get<any, any[]>(`${this.endpoint}/history`);
+  static async getSession(id: string): Promise<ChatSession> {
+    return apiClient.get<any, ChatSession>(`${this.endpoint}/${id}`);
+  }
+
+  static async createSession(): Promise<ChatSession> {
+    return apiClient.post<any, ChatSession>(this.endpoint, {});
+  }
+
+  static async deleteSession(id: string): Promise<void> {
+    return apiClient.delete<any, void>(`${this.endpoint}/${id}`);
+  }
+
+  static async sendMessage(message: string, sessionId?: string | null): Promise<AiChatResponse> {
+    return apiClient.post<any, AiChatResponse>('ai/chat', {
+      message,
+      sessionId
+    });
   }
 }

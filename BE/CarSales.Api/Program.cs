@@ -1,6 +1,11 @@
+using System.Globalization;
 using CarSales.Api.Data;
 using CarSales.Api.Services;
 using Microsoft.EntityFrameworkCore;
+
+var cultureInfo = new CultureInfo("en-LK");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 var builder = WebApplication.CreateBuilder(args);
 

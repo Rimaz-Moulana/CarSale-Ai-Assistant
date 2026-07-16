@@ -18,6 +18,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Expense> Expenses => Set<Expense>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
+    public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -173,6 +175,26 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
             entity.HasIndex(e => e.Username).IsUnique();
             entity.HasIndex(e => e.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<ChatSession>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.Property(e => e.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+        });
+
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Role).IsRequired().HasMaxLength(50);
+            entity.Property(e => e.Content).IsRequired();
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            entity.HasOne(e => e.ChatSession)
+                .WithMany(e => e.Messages)
+                .HasForeignKey(e => e.ChatSessionId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
