@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+
+  --color-background: var(--bg-color);
+  --color-foreground: var(--fg-color);
+  --color-card: var(--card-bg);
+  --color-card-foreground: var(--card-fg);
+  --color-border: var(--border-color);
+  --color-sidebar: var(--sidebar-bg);
+  --color-sidebar-foreground: var(--sidebar-fg);
+}
+
+@layer base {
+  :root {
+    --bg-color: #f8fafc;
+    --fg-color: #0f172a;
+    --card-bg: #ffffff;
+    --card-fg: #0f172a;
+    --border-color: #e2e8f0;
+    --sidebar-bg: #1e293b;
+    --sidebar-fg: #f1f5f9;
+  }
+
+  .dark {
+    --bg-color: #0f172a;
+    --fg-color: #f8fafc;
+    --card-bg: #1e293b;
+    --card-fg: #f8fafc;
+    --border-color: #334155;
+    --sidebar-bg: #020617;
+    --sidebar-fg: #e2e8f0;
+  }
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--fg-color);
+}

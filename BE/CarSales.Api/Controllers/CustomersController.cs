@@ -1,0 +1,43 @@
+using CarSales.Api.Models;
+using CarSales.Api.Services;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CarSales.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class CustomersController : ControllerBase
+{
+    private readonly CustomersService _service;
+
+    public CustomersController(CustomersService service)
+    {
+        _service = service;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<object>> GetCustomers(int page = 1, int limit = 10, string search = "")
+    {
+        var result = await _service.GetCustomersAsync(page, limit, search);
+        return Ok(result);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<object>> GetCustomer(int id)
+    {
+        var customer = await _service.GetCustomerByIdAsync(id);
+        if (customer is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(customer);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Customer>> CreateCustomer(Customer customer)
+    {
+        var created = await _service.CreateCustomerAsync(customer);
+        return CreatedAtAction(nameof(GetCustomer), new { id = created.Id }, created);
+    }
+}
