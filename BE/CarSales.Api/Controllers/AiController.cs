@@ -1,3 +1,4 @@
+using CarSales.Api.DTOs;
 using CarSales.Api.Models;
 using CarSales.Api.Services;
 using CarSales.Api.Data;
@@ -100,7 +101,7 @@ public class AiController : ControllerBase
         session.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync(); // Save user message and/or new session so it gets an ID
 
-        var historyDtos = historyMsgs.Select(m => new AiAgentService.ChatMessageDto(m.Role, m.Content));
+        var historyDtos = historyMsgs.Select(m => new ChatMessageDto(m.Role, m.Content));
 
         try
         {
@@ -135,3 +136,4 @@ public class AiController : ControllerBase
         }
     }
 }
+

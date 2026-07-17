@@ -1,3 +1,4 @@
+using CarSales.Api.DTOs;
 using CarSales.Api.Data;
 using CarSales.Api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -100,3 +101,4 @@ public sealed class CustomersService
         };
     }
 }
+

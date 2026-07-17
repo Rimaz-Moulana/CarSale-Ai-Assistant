@@ -1,6 +1,8 @@
 using System.Globalization;
 using CarSales.Api.Data;
 using CarSales.Api.Services;
+using CarSales.Api.Tools;
+using CarSales.Api.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
