@@ -1,5 +1,6 @@
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 using CarSales.Api.Services;
 
 namespace CarSales.Api.Services;
@@ -29,6 +30,7 @@ public sealed class AiToolService
         _customers = customers;
     }
 
+    [Description("Retrieves a summary of financial metrics including revenue, expenses, profit, cash flow, outstanding payments, and inventory value.")]
     public async Task<string> GetFinanceSummaryAsync()
     {
         var metrics = await _finance.GetFinanceMetricsAsync();
@@ -42,6 +44,7 @@ Finance summary:
 - Inventory value: {metrics.InventoryValue:C}";
     }
 
+    [Description("Retrieves a summary of sales metrics including today's sales, monthly sales, total revenue, estimated profit, and outstanding payments.")]
     public async Task<string> GetSalesSummaryAsync()
     {
         var metrics = await _sales.GetSalesMetricsAsync();
@@ -54,6 +57,7 @@ Sales summary:
 - Outstanding payments: {metrics.OutstandingPayments:C}";
     }
 
+    [Description("Retrieves a summary of inventory metrics including total vehicles, available stock, low stock items, and total inventory value.")]
     public async Task<string> GetInventorySummaryAsync()
     {
         var metrics = await _inventory.GetInventoryMetricsAsync();
@@ -66,6 +70,7 @@ Inventory summary:
 - Inventory value: {metrics.InventoryValue:C}";
     }
 
+    [Description("Retrieves a summary of procurement metrics including active orders, pending deliveries, and total spend in the last 30 days.")]
     public async Task<string> GetProcurementSummaryAsync()
     {
         var metrics = await _procurement.GetProcurementMetricsAsync();
@@ -77,7 +82,8 @@ Procurement summary:
 - Delivered this month: {metrics.DeliveredThisMonth}";
     }
 
-    public async Task<string> SearchCarsAsync(string query)
+    [Description("Searches the car inventory based on a text query. Returns matching car models, prices, and quantities.")]
+    public async Task<string> SearchCarsAsync([Description("The search query, e.g., car make, model, or year.")] string query)
     {
         var results = await _cars.GetCarsAsync(1, 10, query, "All");
         var sb = new StringBuilder("Car search results:\n");
@@ -89,7 +95,8 @@ Procurement summary:
         return sb.ToString();
     }
 
-    public async Task<string> SearchCustomersAsync(string query)
+    [Description("Searches the customer database based on a text query. Returns matching customer names, total spent, and vehicles purchased.")]
+    public async Task<string> SearchCustomersAsync([Description("The search query, e.g., customer name or contact info.")] string query)
     {
         var results = await _customers.GetCustomersAsync(1, 10, query);
         var sb = new StringBuilder("Customer search results:\n");
