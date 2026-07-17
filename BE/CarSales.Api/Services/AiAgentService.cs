@@ -1,3 +1,5 @@
+using CarSales.Api.Tools;
+using CarSales.Api.DTOs;
 using System.Text;
 using CarSales.Api.Models;
 
@@ -61,6 +63,4 @@ public sealed class AiAgentService
         sb.AppendLine("Assistant:");
         return sb.ToString();
     }
-
-    public sealed record ChatMessageDto(string Role, string Content);
 }

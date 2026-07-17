@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using CarSales.Api.Services;
 
-namespace CarSales.Api.Services;
+namespace CarSales.Api.Tools;
 
 public sealed class AiToolService
 {

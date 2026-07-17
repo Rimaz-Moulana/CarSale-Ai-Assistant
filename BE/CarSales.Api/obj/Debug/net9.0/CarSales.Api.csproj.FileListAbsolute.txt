@@ -158,3 +158,11 @@ D:\antigravity\assitant\BE\CarSales.Api\bin\Debug\net9.0\System.Threading.Channe
 D:\antigravity\assitant\BE\CarSales.Api\bin\Debug\net9.0\runtimes\browser\lib\net8.0\System.Text.Encodings.Web.dll
 D:\antigravity\assitant\BE\CarSales.Api\bin\Debug\net9.0\runtimes\win\lib\net9.0\System.Text.Encodings.Web.dll
 D:\antigravity\assitant\BE\CarSales.Api\obj\Debug\net9.0\CarSales.Api.sourcelink.json
+D:\antigravity\assitant\BE\CarSales.Api\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\antigravity\assitant\BE\CarSales.Api\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll
+D:\antigravity\assitant\BE\CarSales.Api\bin\Debug\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\antigravity\assitant\BE\CarSales.Api\bin\Debug\net9.0\Microsoft.IdentityModel.Logging.dll
+D:\antigravity\assitant\BE\CarSales.Api\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.dll
+D:\antigravity\assitant\BE\CarSales.Api\bin\Debug\net9.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\antigravity\assitant\BE\CarSales.Api\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
+D:\antigravity\assitant\BE\CarSales.Api\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll
