@@ -1,9 +1,11 @@
 using CarSales.Api.Models;
 using CarSales.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarSales.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class ProcurementController : ControllerBase
@@ -40,3 +42,4 @@ public class ProcurementController : ControllerBase
         return CreatedAtAction(nameof(GetPurchaseOrders), new { id = created.Id }, created);
     }
 }
+

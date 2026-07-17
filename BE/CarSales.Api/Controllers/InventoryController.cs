@@ -1,8 +1,10 @@
 using CarSales.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarSales.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class InventoryController : ControllerBase
@@ -44,3 +46,4 @@ public class InventoryController : ControllerBase
         return Ok(inventory);
     }
 }
+

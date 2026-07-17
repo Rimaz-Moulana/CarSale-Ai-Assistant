@@ -1,9 +1,11 @@
 using CarSales.Api.Models;
 using CarSales.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarSales.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class SalesController : ControllerBase
@@ -41,3 +43,4 @@ public class SalesController : ControllerBase
         return CreatedAtAction(nameof(GetSales), new { id = created.Id }, created);
     }
 }
+

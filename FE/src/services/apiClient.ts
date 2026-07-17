@@ -1,5 +1,6 @@
 import axios from 'axios';
-import type { AxiosError, AxiosResponse } from 'axios';
+import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import keycloak from '../keycloak';
 
 // The base URL can be configured via environment variables
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5099/api';
@@ -10,6 +11,19 @@ export const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 120000, // 120 seconds timeout for AI generation
+});
+
+apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
+  if (keycloak.token) {
+    try {
+      await keycloak.updateToken(30);
+      config.headers.Authorization = `Bearer ${keycloak.token}`;
+    } catch (error) {
+      console.error('Failed to refresh token', error);
+      keycloak.login();
+    }
+  }
+  return config;
 });
 
 // Response Interceptor for centralized error handling

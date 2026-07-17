@@ -65,6 +65,20 @@ services:
     command: >
       sh -c "echo 'Waiting for Ollama...'; while ! curl -s http://carsales-ollama:11434/api/tags > /dev/null; do sleep 2; done; echo 'Pulling llama3.2:1b...'; curl -s -X POST http://carsales-ollama:11434/api/pull -d '{\"name\": \"llama3.2:1b\"}'; echo 'Done!';"
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.1
+    container_name: carsales-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: start-dev --import-realm
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json:ro
+    networks:
+      - carsales-network
+
   backend:
     build:
       context: ./BE
@@ -80,6 +94,7 @@ services:
     depends_on:
       - postgres
       - ollama
+      - keycloak
 
   frontend:
     build:

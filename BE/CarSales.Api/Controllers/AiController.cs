@@ -1,12 +1,14 @@
 using CarSales.Api.Models;
 using CarSales.Api.Services;
 using CarSales.Api.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace CarSales.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class AiController : ControllerBase

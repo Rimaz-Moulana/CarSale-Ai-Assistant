@@ -2,6 +2,8 @@ using System.Globalization;
 using CarSales.Api.Data;
 using CarSales.Api.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var cultureInfo = new CultureInfo("en-LK");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -41,6 +43,21 @@ builder.Services.AddScoped<AiKernelService>();
 builder.Services.AddScoped<AiToolService>();
 builder.Services.AddScoped<AiAgentService>();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = builder.Configuration["Keycloak:Authority"];
+        options.RequireHttpsMetadata = false; // For dev only
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+            ValidIssuer = builder.Configuration["Keycloak:ValidIssuer"],
+            ValidateIssuer = true
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -49,6 +66,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(CorsPolicyName);
+app.UseAuthentication();
+app.UseAuthorization();
 app.EnsureSeedData();
 
 app.UseHttpsRedirection();
