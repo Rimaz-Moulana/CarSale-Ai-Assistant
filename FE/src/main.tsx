@@ -4,17 +4,18 @@ import './index.css'
 import App from './App.tsx'
 import keycloak from './keycloak';
 
-keycloak.init({ onLoad: 'login-required' }).then((authenticated) => {
-  if (authenticated) {
-    createRoot(document.getElementById('root')!).render(
-      <StrictMode>
-        <App />
-      </StrictMode>,
-    );
-  } else {
-    window.location.reload();
-  }
+keycloak.init({ onLoad: 'check-sso', pkceMethod: 'S256' }).then((authenticated) => {
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App authenticated={authenticated} />
+    </StrictMode>,
+  );
 }).catch((err) => {
   console.error("Keycloak initialization failed", err);
-  document.getElementById('root')!.innerHTML = '<div style="padding: 20px; color: red;">Authentication Failed. Please ensure Keycloak is running.</div>';
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App authenticated={false} keycloakError={true} />
+    </StrictMode>,
+  );
 });
+

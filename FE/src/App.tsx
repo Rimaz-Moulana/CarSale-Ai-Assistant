@@ -10,10 +10,24 @@ import { Finance } from '@/pages/Finance';
 import { Assistant } from '@/pages/Assistant';
 import { Reports } from '@/pages/Reports';
 import { NotFound } from '@/pages/NotFound';
+import { Login } from '@/pages/Login';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Toaster } from 'sonner';
 
-function App() {
+interface AppProps {
+  authenticated: boolean;
+  keycloakError?: boolean;
+}
+
+function App({ authenticated }: AppProps) {
+  if (!authenticated) {
+    return (
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Login />
+      </ThemeProvider>
+    );
+  }
+
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <BrowserRouter>
@@ -39,3 +53,4 @@ function App() {
 }
 
 export default App;
+
