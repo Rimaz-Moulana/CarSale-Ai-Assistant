@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html font-sans lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CarSale AI - Keycloak Identity Portal</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
+    }
+    .glow-bg {
+      animation: pulseGlow 6s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white flex flex-col justify-between relative overflow-x-hidden">
+
+  <!-- Background Orbs -->
+  <div class="fixed -top-40 -left-40 w-96 h-96 bg-blue-600/20 rounded-full blur-[140px] pointer-events-none glow-bg"></div>
+  <div class="fixed top-1/2 -right-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-[140px] pointer-events-none glow-bg"></div>
+
+  <!-- Navigation -->
+  <header class="w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md px-8 py-4 flex items-center justify-between z-20">
+    <div class="flex items-center space-x-3">
+      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center p-2 shadow-lg shadow-blue-500/20">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
+        </svg>
+      </div>
+      <div>
+        <h1 class="font-bold text-lg text-white flex items-center gap-2">
+          CarSale AI <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold">Keycloak Portal</span>
+        </h1>
+        <p class="text-xs text-slate-400">Enterprise Single Sign-On Portal</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <a href="/" class="text-xs font-semibold px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition-colors shadow-md shadow-blue-500/20">
+        Back to App Dashboard
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="max-w-6xl w-full mx-auto px-6 py-12 flex-1 flex flex-col justify-center items-center text-center z-10 space-y-10">
+    
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-blue-400 text-xs font-medium">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+      Keycloak 24.0.1 Identity Realm Active
+    </div>
+
+    <div class="max-w-3xl space-y-4">
+      <h2 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
+        Custom Keycloak <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">Identity Portal</span>
+      </h2>
+      <p class="text-slate-400 text-base sm:text-lg leading-relaxed">
+        Manage your dealership authentication, account credentials, OAuth2 tokens, and realm user permissions directly through the integrated Keycloak security suite.
+      </p>
+    </div>
+
+    <!-- Quick Portal Links Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl pt-4">
+      
+      <!-- Card 1: Main Application Login -->
+      <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-xl flex flex-col justify-between text-left space-y-4 hover:border-blue-500/50 transition-all group">
+        <div class="space-y-2">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold">
+            ⚡
+          </div>
+          <h3 class="font-bold text-lg text-white">CarSale AI App</h3>
+          <p class="text-xs text-slate-400">Launch the main dealership management web application.</p>
+        </div>
+        <a href="/" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs text-center transition-colors">
+          Open App Dashboard &rarr;
+        </a>
+      </div>
+
+      <!-- Card 2: Keycloak Account Self-Service -->
+      <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-xl flex flex-col justify-between text-left space-y-4 hover:border-indigo-500/50 transition-all group">
+        <div class="space-y-2">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold">
+            👤
+          </div>
+          <h3 class="font-bold text-lg text-white">Keycloak Account</h3>
+          <p class="text-xs text-slate-400">Manage user profile, update password, two-factor auth, and active sessions.</p>
+        </div>
+        <a href="http://localhost:8080/realms/carsales-realm/account/" target="_blank" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs text-center transition-colors">
+          Manage Account &rarr;
+        </a>
+      </div>
+
+      <!-- Card 3: Keycloak Admin Console -->
+      <div class="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-xl flex flex-col justify-between text-left space-y-4 hover:border-emerald-500/50 transition-all group">
+        <div class="space-y-2">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">
+            ⚙️
+          </div>
+          <h3 class="font-bold text-lg text-white">Keycloak Admin</h3>
+          <p class="text-xs text-slate-400">Admin portal for realm configuration, user creation, roles, and client settings.</p>
+        </div>
+        <a href="http://localhost:8080" target="_blank" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs text-center transition-colors">
+          Admin Console &rarr;
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Details Box -->
+    <div class="w-full max-w-4xl p-6 rounded-2xl bg-slate-900/40 border border-slate-800/80 backdrop-blur-md text-left space-y-3">
+      <h4 class="font-semibold text-sm text-slate-200 flex items-center gap-2">
+        <span class="text-blue-400">📌</span> Configuration Details & Specifications
+      </h4>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs font-mono text-slate-400 pt-2">
+        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <div class="text-slate-500 text-[10px]">REALM NAME</div>
+          <div class="text-blue-400 font-bold mt-1">carsales-realm</div>
+        </div>
+        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <div class="text-slate-500 text-[10px]">CLIENT ID</div>
+          <div class="text-blue-400 font-bold mt-1">cars-sale</div>
+        </div>
+        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <div class="text-slate-500 text-[10px]">ISSUER URL</div>
+          <div class="text-blue-400 font-bold mt-1 truncate">http://localhost:8080/realms/carsales-realm</div>
+        </div>
+        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <div class="text-slate-500 text-[10px]">PROTOCOL</div>
+          <div class="text-blue-400 font-bold mt-1">OpenID Connect / OAuth2</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full border-t border-slate-800/60 bg-slate-950/80 px-8 py-4 text-center text-xs text-slate-500 z-10">
+    <p>© 2026 CarSale AI Assistant • Custom Keycloak Portal Page</p>
+  </footer>
+
+</body>
+</html>
