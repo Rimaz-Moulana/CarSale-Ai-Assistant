@@ -1,6 +1,7 @@
 {
   "realm": "carsales-realm",
   "enabled": true,
+  "loginTheme": "carsale",
   "registrationAllowed": true,
   "users": [
     {

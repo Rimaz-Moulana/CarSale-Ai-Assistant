@@ -76,6 +76,7 @@ services:
       - "8080:8080"
     volumes:
       - ./keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json:ro
+      - ./keycloak-theme/carsale:/opt/keycloak/themes/carsale:ro
     networks:
       - carsales-network
 

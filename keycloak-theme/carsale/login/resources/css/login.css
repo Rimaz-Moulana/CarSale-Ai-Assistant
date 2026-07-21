@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+body {
+  background: #090d16 !important;
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(79, 70, 229, 0.2) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 60%) !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  color: #f8fafc !important;
+  min-height: 100vh !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Hide default Keycloak background polygon pattern */
+#kc-bg, #kc-bg-paper, .login-pf body {
+  background: transparent !important;
+}
+
+/* Header / Realm Title */
+#kc-header {
+  text-align: center !important;
+  margin-bottom: 1.5rem !important;
+}
+
+#kc-header-wrapper {
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em !important;
+  color: #ffffff !important;
+  text-transform: uppercase !important;
+  background: linear-gradient(135deg, #60a5fa, #818cf8) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* Main Container Card */
+#kc-container-wrapper, .login-pf-page {
+  width: 100% !important;
+  max-width: 460px !important;
+  padding: 1rem !important;
+  margin: 0 auto !important;
+}
+
+.card-pf, #kc-content-wrapper, div.kc-form-card, .login-pf-page .card-pf {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border: 1px solid rgba(51, 65, 85, 0.8) !important;
+  border-radius: 1.25rem !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(37, 99, 235, 0.15) !important;
+  backdrop-filter: blur(16px) !important;
+  padding: 2.25rem !important;
+  max-width: 100% !important;
+}
+
+/* Card Page Title */
+#kc-page-title, h1#kc-page-title {
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  text-align: center !important;
+  margin-top: 0 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+/* Labels */
+label, .control-label {
+  color: #94a3b8 !important;
+  font-size: 0.825rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.375rem !important;
+  display: block !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+.form-control {
+  width: 100% !important;
+  background: rgba(2, 6, 23, 0.7) !important;
+  border: 1px solid #334155 !important;
+  border-radius: 0.625rem !important;
+  padding: 0.75rem 1rem !important;
+  color: #f8fafc !important;
+  font-size: 0.95rem !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+.form-control:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+  background: rgba(15, 23, 42, 0.9) !important;
+}
+
+/* Submit Button */
+input[type="submit"],
+#kc-login,
+button.btn-primary,
+.btn-primary {
+  width: 100% !important;
+  background: linear-gradient(135deg, #2563eb, #4f46e5) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  border: none !important;
+  border-radius: 0.625rem !important;
+  padding: 0.75rem 1.5rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  margin-top: 1rem !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
+}
+
+input[type="submit"]:hover,
+#kc-login:hover,
+button.btn-primary:hover,
+.btn-primary:hover {
+  background: linear-gradient(135deg, #1d4ed8, #4338ca) !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Footer / Links */
+#kc-registration, #kc-info, .login-pf-signup {
+  margin-top: 1.5rem !important;
+  text-align: center !important;
+  font-size: 0.85rem !important;
+  color: #64748b !important;
+  border-top: 1px solid rgba(51, 65, 85, 0.5) !important;
+  padding-top: 1rem !important;
+}
+
+a, #kc-registration a, #kc-info a, .login-pf-signup a {
+  color: #60a5fa !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transition: color 0.2s !important;
+}
+
+a:hover, #kc-registration a:hover, #kc-info a:hover, .login-pf-signup a:hover {
+  color: #93c5fd !important;
+  text-decoration: underline !important;
+}
+
+/* Checkbox */
+.checkbox label {
+  color: #94a3b8 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-weight: 500 !important;
+}
