@@ -18,10 +18,16 @@ public sealed class FinanceService
         decimal Profit,
         decimal CashFlow,
         decimal OutstandingPayments,
-        decimal InventoryValue);
+        decimal InventoryValue,
+        int CarsSold = 0,
+        int ActiveInventory = 0,
+        int PendingOrders = 0,
+        decimal TotalRevenue = 0,
+        decimal MonthlyProfit = 0,
+        decimal ProcurementCost = 0);
 
-    public sealed record FinanceChartPoint(string Name, decimal Profit);
-    public sealed record FinanceChartSeriesPoint(string Name, decimal InAmount, decimal OutAmount);
+    public sealed record FinanceChartPoint(string Name, decimal Profit, decimal Sales = 0);
+    public sealed record FinanceChartSeriesPoint(string Name, decimal In, decimal Out, decimal InAmount = 0, decimal OutAmount = 0);
     public sealed record ExpenseBreakdownItem(string Name, decimal Value, string Color);
 
     public sealed record FinanceDashboardDto(
@@ -43,7 +49,23 @@ public sealed class FinanceService
         var outstandingPayments = await _context.Payments.Where(p => p.Status != "Completed").SumAsync(p => (decimal?)p.Amount) ?? 0;
         var inventoryValue = await _context.Inventories.Include(i => i.Car).SumAsync(i => (decimal?)(i.Quantity * (i.Car != null ? i.Car.PurchasePrice : 0))) ?? 0;
 
-        return new FinanceMetricsDto(revenue, expenses, profit, revenue - expenses, outstandingPayments, inventoryValue);
+        var carsSold = await _context.Sales.CountAsync(s => s.Status == "Completed");
+        var activeInventory = await _context.Inventories.SumAsync(i => (int?)i.Quantity) ?? 0;
+        var pendingOrders = await _context.PurchaseOrders.CountAsync(po => po.Status == "Pending");
+
+        return new FinanceMetricsDto(
+            revenue,
+            expenses,
+            profit,
+            revenue - expenses,
+            outstandingPayments,
+            inventoryValue,
+            carsSold,
+            activeInventory,
+            pendingOrders,
+            revenue,
+            profit,
+            expenses);
     }
 
     public async Task<IReadOnlyList<FinanceChartPoint>> GetFinanceChartsAsync()
@@ -69,7 +91,8 @@ public sealed class FinanceService
                 var pointDate = new DateTime(today.Year, today.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(-offset);
                 var revenueForMonth = monthlySales.FirstOrDefault(m => m.Year == pointDate.Year && m.Month == pointDate.Month)?.Revenue ?? 0;
                 var expenseForMonth = monthlyExpenses.FirstOrDefault(m => m.Year == pointDate.Year && m.Month == pointDate.Month)?.Total ?? 0;
-                return new FinanceChartPoint(pointDate.ToString("MMM"), revenueForMonth - expenseForMonth);
+                var netProfit = revenueForMonth - expenseForMonth;
+                return new FinanceChartPoint(pointDate.ToString("MMM"), netProfit, netProfit);
             })
             .Reverse()
             .ToList();
@@ -80,7 +103,11 @@ public sealed class FinanceService
     public async Task<IReadOnlyList<FinanceChartSeriesPoint>> GetCashFlowTrendAsync()
     {
         var monthlyProfit = await GetFinanceChartsAsync();
-        return monthlyProfit.Select(m => new FinanceChartSeriesPoint(m.Name, m.Profit > 0 ? m.Profit : 0m, m.Profit < 0 ? Math.Abs(m.Profit) : 0m)).ToList();
+        return monthlyProfit.Select(m => {
+            var inAmt = m.Profit > 0 ? m.Profit : 0m;
+            var outAmt = m.Profit < 0 ? Math.Abs(m.Profit) : 0m;
+            return new FinanceChartSeriesPoint(m.Name, inAmt, outAmt, inAmt, outAmt);
+        }).ToList();
     }
 
     public async Task<IReadOnlyList<ExpenseBreakdownItem>> GetExpenseBreakdownAsync()
@@ -157,7 +184,8 @@ public sealed class FinanceService
             .Select(offset =>
             {
                 var pointDate = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(-offset);
-                return new FinanceChartPoint(pointDate.ToString("MMM"), salesTrend.FirstOrDefault(x => x.Year == pointDate.Year && x.Month == pointDate.Month)?.Sales ?? 0);
+                var count = salesTrend.FirstOrDefault(x => x.Year == pointDate.Year && x.Month == pointDate.Month)?.Sales ?? 0;
+                return new FinanceChartPoint(pointDate.ToString("MMM"), count, count);
             })
             .Reverse()
             .ToList();

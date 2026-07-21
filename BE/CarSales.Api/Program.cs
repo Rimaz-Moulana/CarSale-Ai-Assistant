@@ -17,7 +17,10 @@ const string CorsPolicyName = "AllowLocalhostFrontend";
 var frontendOrigin = builder.Configuration["FrontendOrigin"] ?? "http://localhost:5173";
 
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicyName, policy =>

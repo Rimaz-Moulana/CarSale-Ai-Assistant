@@ -25,13 +25,27 @@ export function Dashboard() {
     async function loadData() {
       try {
         const [dashMetrics, recentSales, pendingOrders] = await Promise.all([
-          FinanceService.getDashboardMetrics(),
-          SalesService.getSalesList(1, 5).then(res => res.data),
-          SupplierService.getPurchaseOrders(1, 5, '', 'Pending').then(res => res.data)
+          FinanceService.getDashboardMetrics().catch(err => {
+            console.error('Failed getDashboardMetrics', err);
+            return null;
+          }),
+          SalesService.getSalesList(1, 5).then(res => res?.data || []).catch(err => {
+            console.error('Failed getSalesList', err);
+            return [];
+          }),
+          SupplierService.getPurchaseOrders(1, 5, '', 'Pending').then(res => res?.data || []).catch(err => {
+            console.error('Failed getPurchaseOrders', err);
+            return [];
+          })
         ]);
-        setData(dashMetrics);
-        setSales(recentSales);
-        setOrders(pendingOrders);
+        setData(dashMetrics || {
+          kpis: { revenue: 0, expenses: 0, profit: 0, cashFlow: 0, outstandingPayments: 0, inventoryValue: 0, carsSold: 0, activeInventory: 0, pendingOrders: 0 },
+          salesTrend: [],
+          revenueVsExpenses: [],
+          vehicleCategories: []
+        });
+        setSales(recentSales || []);
+        setOrders(pendingOrders || []);
       } catch (error) {
         console.error("Failed to load dashboard data", error);
         toast.error("Failed to load dashboard data");
@@ -42,7 +56,7 @@ export function Dashboard() {
     loadData();
   }, []);
 
-  if (loading || !data) {
+  if (loading) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-9 w-48" />
@@ -56,7 +70,13 @@ export function Dashboard() {
     );
   }
 
-  const { kpis, salesTrend, revenueVsExpenses, vehicleCategories } = data;
+  const kpis = data?.kpis || {};
+  const salesTrend = (data?.salesTrend || []).map((item: any) => ({
+    name: item.name,
+    sales: item.sales ?? item.profit ?? 0
+  }));
+  const revenueVsExpenses = data?.revenueVsExpenses || [];
+  const vehicleCategories = data?.vehicleCategories || [];
 
   return (
     <motion.div 
@@ -77,7 +97,7 @@ export function Dashboard() {
             <DollarSign className="w-4 h-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">LKR {kpis.totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">LKR {(kpis.totalRevenue ?? kpis.revenue ?? 0).toLocaleString()}</div>
             <p className="text-xs text-emerald-500 mt-1">+12% from last month</p>
           </CardContent>
         </Card>
@@ -88,7 +108,7 @@ export function Dashboard() {
             <TrendingUp className="w-4 h-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">LKR {kpis.monthlyProfit.toLocaleString()}</div>
+            <div className="text-2xl font-bold">LKR {(kpis.monthlyProfit ?? kpis.profit ?? 0).toLocaleString()}</div>
             <p className="text-xs text-blue-500 mt-1">+5.2% from last month</p>
           </CardContent>
         </Card>
@@ -99,7 +119,7 @@ export function Dashboard() {
             <Car className="w-4 h-4 text-indigo-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{kpis.carsSold}</div>
+            <div className="text-2xl font-bold">{kpis.carsSold ?? 0}</div>
             <p className="text-xs text-slate-500 mt-1">Target: 150</p>
           </CardContent>
         </Card>
@@ -110,7 +130,7 @@ export function Dashboard() {
             <Box className="w-4 h-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{kpis.activeInventory}</div>
+            <div className="text-2xl font-bold">{kpis.activeInventory ?? (kpis.inventoryValue ? `LKR ${(kpis.inventoryValue).toLocaleString()}` : 0)}</div>
             <p className="text-xs text-slate-500 mt-1">45 new units in transit</p>
           </CardContent>
         </Card>
@@ -121,7 +141,7 @@ export function Dashboard() {
             <Clock className="w-4 h-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{kpis.pendingOrders}</div>
+            <div className="text-2xl font-bold">{kpis.pendingOrders ?? 0}</div>
             <p className="text-xs text-slate-500 mt-1">Needs approval</p>
           </CardContent>
         </Card>
@@ -132,7 +152,7 @@ export function Dashboard() {
             <ShoppingCart className="w-4 h-4 text-rose-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">LKR {kpis.procurementCost.toLocaleString()}</div>
+            <div className="text-2xl font-bold">LKR {(kpis.procurementCost ?? kpis.expenses ?? 0).toLocaleString()}</div>
             <p className="text-xs text-rose-500 mt-1">Slightly above budget</p>
           </CardContent>
         </Card>
@@ -236,11 +256,11 @@ export function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sales.map((sale) => (
-                  <TableRow key={sale.id}>
-                    <TableCell className="font-medium">{sale.customerName}</TableCell>
-                    <TableCell>{sale.make} {sale.model}</TableCell>
-                    <TableCell className="text-right font-semibold">LKR {sale.amount.toLocaleString()}</TableCell>
+                {sales.map((sale: any) => (
+                  <TableRow key={sale.id || sale.invoiceNo}>
+                    <TableCell className="font-medium">{sale.customerName || 'Customer'}</TableCell>
+                    <TableCell>{sale.vehicle || `${sale.make || ''} ${sale.model || ''}`.trim() || 'Vehicle'}</TableCell>
+                    <TableCell className="text-right font-semibold">LKR {(sale.amount ?? sale.totalAmount ?? 0).toLocaleString()}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -263,15 +283,15 @@ export function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {orders.map((po) => (
-                  <TableRow key={po.id}>
-                    <TableCell className="font-medium">{po.supplier}</TableCell>
+                {orders.map((po: any) => (
+                  <TableRow key={po.id || po.poNumber}>
+                    <TableCell className="font-medium">{po.supplier || 'Supplier'}</TableCell>
                     <TableCell>
                       <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
-                        {po.status}
+                        {po.status || 'Pending'}
                       </span>
                     </TableCell>
-                    <TableCell className="text-right font-semibold">LKR {po.totalAmount.toLocaleString()}</TableCell>
+                    <TableCell className="text-right font-semibold">LKR {(po.totalCost ?? po.totalAmount ?? 0).toLocaleString()}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace CarSales.Api.Models;
 
 public class ChatMessage
@@ -8,5 +10,6 @@ public class ChatMessage
     public string Content { get; set; } = null!;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    [JsonIgnore]
     public ChatSession ChatSession { get; set; } = null!;
 }
