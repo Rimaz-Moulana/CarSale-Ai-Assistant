@@ -84,13 +84,30 @@ public sealed class CustomersService
         );
     }
 
-    public async Task<Customer> CreateCustomerAsync(Customer customer)
+    public async Task<CustomerResponseDto> CreateCustomerAsync(CreateCustomerDto dto)
     {
-        _context.Customers.Add(customer);
-        await _context.SaveChangesAsync();
-        return customer;
-    }
+        var customer = new CustomerDetailDto
+        {
+            FullName = dto.FullName,
+            Email = dto.Email,
+            Phone = dto.Phone,
+            Address = dto.Address
+        };
 
+        _context.Customer.Add(customer);
+
+        await _context.SaveChangesAsync();
+
+        return new CustomerResponseDto
+        {
+            Id = customer.Id,
+            FullName = customer.FullName,
+            Email = customer.Email,
+            Phone = customer.Phone,
+            Address = customer.Address,
+            CreatedAt = customer.CreatedAt
+        };
+    }
     private static string GetCustomerType(decimal totalSpent)
     {
         return totalSpent switch
