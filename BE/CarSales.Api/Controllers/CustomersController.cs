@@ -1,5 +1,6 @@
 using CarSales.Api.Models;
 using CarSales.Api.Services;
+using CarSales.Api.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,9 +38,9 @@ public class CustomersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Customer>> CreateCustomer(Customer customer)
+    public async Task<ActionResult<CustomerResponseDto>> CreateCustomer(CreateCustomerDto dto)
     {
-        var created = await _service.CreateCustomerAsync(customer);
+        var created = await _service.CreateCustomerAsync(dto);
         return CreatedAtAction(nameof(GetCustomer), new { id = created.Id }, created);
     }
 }

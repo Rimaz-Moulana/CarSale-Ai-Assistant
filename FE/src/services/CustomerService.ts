@@ -10,7 +10,7 @@ export class CustomerService {
       limit: limit.toString(),
       ...(search && { search }),
     });
-    
+
     return apiClient.get<any, PaginatedResponse<Customer>>(`${this.endpoint}?${params}`);
   }
 
@@ -18,7 +18,7 @@ export class CustomerService {
     return apiClient.get<any, Customer>(`${this.endpoint}/${id}`);
   }
 
-  static async createCustomer(customerData: Omit<Customer, 'id'>): Promise<Customer> {
-    return apiClient.post<any, Customer>(this.endpoint, customerData);
+  static async createCustomer(customerData: { fullName: string; email?: string; phone?: string; address?: string }): Promise<any> {
+    return apiClient.post<any, any>(this.endpoint, customerData);
   }
 }

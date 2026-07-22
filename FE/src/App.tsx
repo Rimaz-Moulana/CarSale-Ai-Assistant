@@ -4,6 +4,7 @@ import { Layout } from '@/components/Layout';
 import { Dashboard } from '@/pages/Dashboard';
 import { Cars } from '@/pages/Cars';
 import { Sales } from '@/pages/Sales';
+import { Customers } from '@/pages/Customers';
 import { Procurement } from '@/pages/Procurement';
 import { Inventory } from '@/pages/Inventory';
 import { Finance } from '@/pages/Finance';
@@ -37,6 +38,7 @@ function App({ authenticated }: AppProps) {
                 <Route index element={<Dashboard />} />
                 <Route path="cars" element={<Cars />} />
                 <Route path="sales" element={<Sales />} />
+                <Route path="customers" element={<Customers />} />
                 <Route path="procurement" element={<Procurement />} />
                 <Route path="inventory" element={<Inventory />} />
                 <Route path="finance" element={<Finance />} />

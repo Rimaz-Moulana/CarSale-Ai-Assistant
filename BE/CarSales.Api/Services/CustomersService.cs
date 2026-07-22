@@ -86,7 +86,7 @@ public sealed class CustomersService
 
     public async Task<CustomerResponseDto> CreateCustomerAsync(CreateCustomerDto dto)
     {
-        var customer = new CustomerDetailDto
+        var customer = new Customer
         {
             FullName = dto.FullName,
             Email = dto.Email,
@@ -94,8 +94,7 @@ public sealed class CustomersService
             Address = dto.Address
         };
 
-        _context.Customer.Add(customer);
-
+        _context.Customers.Add(customer);
         await _context.SaveChangesAsync();
 
         return new CustomerResponseDto

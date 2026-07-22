@@ -1,4 +1,4 @@
-
+namespace CarSales.Api.DTOs;
 
 public class CreateCustomerDto
 {
