@@ -70,17 +70,42 @@ public sealed class ProcurementService
         return new PaginatedResult<PurchaseOrderListItemDto>(items, total, page, limit);
     }
 
-    public async Task<PurchaseOrder> CreatePurchaseOrderAsync(PurchaseOrder purchaseOrder)
+    public async Task<PurchaseOrder> CreatePurchaseOrderAsync(CreatePurchaseOrderRequestDto dto)
     {
-        if (purchaseOrder.OrderDate == default)
+        // 1. Find or create Supplier by name
+        var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Name.ToLower() == dto.Supplier.ToLower());
+        if (supplier == null)
         {
-            purchaseOrder.OrderDate = DateTime.UtcNow;
+            supplier = new Supplier { Name = dto.Supplier };
+            _context.Suppliers.Add(supplier);
+            await _context.SaveChangesAsync();
         }
 
-        if (string.IsNullOrWhiteSpace(purchaseOrder.Status))
+        // 2. Resolve a fallback user
+        var user = await _context.Users.FirstOrDefaultAsync();
+        if (user == null)
         {
-            purchaseOrder.Status = "Pending";
+            user = new User 
+            { 
+                FullName = "System Admin", 
+                Username = "admin", 
+                Email = "admin@carsales.local", 
+                PasswordHash = "admin123" 
+            };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
         }
+
+        // 3. Map and create the purchase order
+        var purchaseOrder = new PurchaseOrder
+        {
+            SupplierId = supplier.Id,
+            UserId = user.Id,
+            OrderDate = dto.ExpectedDelivery == default ? DateTime.UtcNow : DateTime.SpecifyKind(dto.ExpectedDelivery, DateTimeKind.Utc),
+            TotalAmount = dto.TotalCost,
+            Status = string.IsNullOrWhiteSpace(dto.Status) ? "Pending" : dto.Status,
+            Notes = $"Automatically created order from supplier: {dto.Supplier}"
+        };
 
         _context.PurchaseOrders.Add(purchaseOrder);
         await _context.SaveChangesAsync();
