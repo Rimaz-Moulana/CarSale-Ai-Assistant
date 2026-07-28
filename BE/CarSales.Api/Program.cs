@@ -23,6 +23,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartBodyLengthLimit = int.MaxValue;
+    options.MultipartHeadersLengthLimit = int.MaxValue;
+});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicyName, policy =>
@@ -45,7 +51,14 @@ builder.Services.AddScoped<SalesService>();
 builder.Services.AddScoped<ProcurementService>();
 builder.Services.AddScoped<FinanceService>();
 builder.Services.AddScoped<InventoryService>();
+builder.Services.AddScoped<ImageVerificationService>();
+builder.Services.AddScoped<IDropboxService, DropboxService>();
+builder.Services.AddScoped<IImageEmbeddingService, GeminiImageEmbeddingService>();
+builder.Services.AddSingleton<IVectorSimilarityService, VectorSimilarityService>();
+builder.Services.AddScoped<IVehicleImageMatchingService, VehicleImageMatchingService>();
+builder.Services.AddHostedService<DropboxSyncWorker>();
 builder.Services.AddHttpClient("Ollama");
+builder.Services.AddHttpClient("Dropbox");
 builder.Services.AddScoped<AiKernelService>();
 builder.Services.AddScoped<AiToolService>();
 builder.Services.AddScoped<AiAgentService>();
@@ -73,6 +86,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(CorsPolicyName);
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.EnsureSeedData();

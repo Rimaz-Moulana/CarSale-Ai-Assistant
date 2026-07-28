@@ -30,4 +30,16 @@ export class CarsService {
   static async deleteCar(id: string): Promise<void> {
     return apiClient.delete(`${this.endpoint}/${id}`);
   }
+
+  static async uploadCarImages(id: string, files: File[]): Promise<string[]> {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+    return apiClient.post<any, string[]>(`${this.endpoint}/${id}/images`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  }
 }

@@ -12,6 +12,99 @@ public static class DbInitializer
 
         context.Database.EnsureCreated();
 
+        context.Database.ExecuteSqlRaw(@"
+            CREATE TABLE IF NOT EXISTS ""CarImageVerifications"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""CarId"" INTEGER NOT NULL,
+                ""ChassisNumber"" VARCHAR(100) NOT NULL,
+                ""Status"" VARCHAR(50) NOT NULL,
+                ""DropboxPath"" VARCHAR(500) NOT NULL,
+                ""ResultNotes"" TEXT NOT NULL,
+                ""MismatchedFiles"" TEXT,
+                ""CheckedAt"" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT ""FK_CarImageVerifications_Cars_CarId"" FOREIGN KEY (""CarId"") REFERENCES ""Cars"" (""Id"") ON DELETE CASCADE
+            );
+        ");
+
+        context.Database.ExecuteSqlRaw(@"
+            CREATE TABLE IF NOT EXISTS ""DropboxVehicles"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""Vin"" VARCHAR(50) NOT NULL,
+                ""Dealer"" VARCHAR(250) NOT NULL,
+                ""FolderPath"" VARCHAR(500) NOT NULL,
+                ""DateFolder"" VARCHAR(100) NOT NULL,
+                ""LastSyncedAt"" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE UNIQUE INDEX IF NOT EXISTS ""IX_DropboxVehicles_Vin"" ON ""DropboxVehicles"" (""Vin"");
+        ");
+
+        context.Database.ExecuteSqlRaw(@"
+            CREATE TABLE IF NOT EXISTS ""DropboxImages"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""DropboxVehicleId"" INTEGER NULL,
+                ""DropboxFileId"" VARCHAR(150) NOT NULL,
+                ""FileName"" VARCHAR(250) NOT NULL,
+                ""PathDisplay"" VARCHAR(500) NOT NULL,
+                ""ContentHash"" VARCHAR(150) NOT NULL,
+                ""MimeType"" VARCHAR(100) NOT NULL,
+                ""ImageType"" VARCHAR(50) NOT NULL DEFAULT 'OTHER',
+                ""Embedding"" REAL[] NULL,
+                ""EmbeddingModel"" VARCHAR(100) NOT NULL,
+                ""EmbeddingVersion"" VARCHAR(100) NOT NULL,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                ""UpdatedAt"" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT ""FK_DropboxImages_DropboxVehicles_DropboxVehicleId"" FOREIGN KEY (""DropboxVehicleId"") REFERENCES ""DropboxVehicles"" (""Id"") ON DELETE CASCADE
+            );
+        ");
+
+        context.Database.ExecuteSqlRaw(@"
+            CREATE TABLE IF NOT EXISTS ""VehicleMatchRequests"" (
+                ""Id"" UUID PRIMARY KEY,
+                ""Vin"" VARCHAR(50) NOT NULL,
+                ""CarId"" INTEGER NULL,
+                ""UserId"" VARCHAR(150) NULL,
+                ""Status"" VARCHAR(50) NOT NULL,
+                ""OverallScore"" DOUBLE PRECISION NOT NULL,
+                ""Confidence"" VARCHAR(50) NOT NULL,
+                ""Decision"" VARCHAR(50) NOT NULL,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                ""CompletedAt"" TIMESTAMP WITH TIME ZONE NULL,
+                ""ErrorMessage"" TEXT NULL,
+                CONSTRAINT ""FK_VehicleMatchRequests_Cars_CarId"" FOREIGN KEY (""CarId"") REFERENCES ""Cars"" (""Id"") ON DELETE SET NULL
+            );
+        ");
+
+        context.Database.ExecuteSqlRaw(@"
+            CREATE TABLE IF NOT EXISTS ""VehicleImageMatches"" (
+                ""Id"" SERIAL PRIMARY KEY,
+                ""MatchRequestId"" UUID NOT NULL,
+                ""VehicleImageId"" VARCHAR(500) NOT NULL,
+                ""DropboxImageId"" INTEGER NOT NULL,
+                ""SimilarityScore"" DOUBLE PRECISION NOT NULL,
+                ""Decision"" VARCHAR(50) NOT NULL,
+                ""CreatedAt"" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT ""FK_VehicleImageMatches_VehicleMatchRequests_MatchRequestId"" FOREIGN KEY (""MatchRequestId"") REFERENCES ""VehicleMatchRequests"" (""Id"") ON DELETE CASCADE,
+                CONSTRAINT ""FK_VehicleImageMatches_DropboxImages_DropboxImageId"" FOREIGN KEY (""DropboxImageId"") REFERENCES ""DropboxImages"" (""Id"") ON DELETE RESTRICT
+            );
+        ");
+
+        context.Database.ExecuteSqlRaw(@"
+            ALTER TABLE ""Cars"" ADD COLUMN IF NOT EXISTS ""Images"" TEXT;
+            UPDATE ""Cars"" SET ""Images"" = '[]' WHERE ""Images"" IS NULL;
+            ALTER TABLE ""Cars"" ALTER COLUMN ""PurchasePrice"" TYPE NUMERIC(18,2);
+            ALTER TABLE ""Cars"" ALTER COLUMN ""SellingPrice"" TYPE NUMERIC(18,2);
+            ALTER TABLE ""Sales"" ALTER COLUMN ""TotalAmount"" TYPE NUMERIC(18,2);
+            ALTER TABLE ""PurchaseOrders"" ALTER COLUMN ""TotalAmount"" TYPE NUMERIC(18,2);
+            ALTER TABLE ""Expenses"" ALTER COLUMN ""Amount"" TYPE NUMERIC(18,2);
+            ALTER TABLE ""Payments"" ALTER COLUMN ""Amount"" TYPE NUMERIC(18,2);
+
+            ALTER TABLE ""Sales"" DROP CONSTRAINT IF EXISTS ""FK_Sales_Cars_CarId"";
+            ALTER TABLE ""Sales"" ADD CONSTRAINT ""FK_Sales_Cars_CarId"" FOREIGN KEY (""CarId"") REFERENCES ""Cars"" (""Id"") ON DELETE CASCADE;
+
+            ALTER TABLE ""VehicleImageMatches"" DROP CONSTRAINT IF EXISTS ""FK_VehicleImageMatches_DropboxImages_DropboxImageId"";
+            ALTER TABLE ""VehicleImageMatches"" ADD CONSTRAINT ""FK_VehicleImageMatches_DropboxImages_DropboxImageId"" FOREIGN KEY (""DropboxImageId"") REFERENCES ""DropboxImages"" (""Id"") ON DELETE CASCADE;
+        ");
+
         if (context.Cars.Any() || context.Customers.Any() || context.Suppliers.Any())
         {
             return;

@@ -98,6 +98,8 @@ services:
       - postgres
       - ollama
       - keycloak
+    volumes:
+      - ./BE/CarSales.Api/wwwroot:/app/wwwroot
 
   frontend:
     build:

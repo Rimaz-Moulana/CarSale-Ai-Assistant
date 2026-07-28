@@ -23,7 +23,8 @@ public sealed class CarsService
         decimal Price,
         string Status,
         int Quantity,
-        string ImageUrl);
+        string ImageUrl,
+        List<string> Images);
 
     public sealed record CarDetailDto(
         string Id,
@@ -35,7 +36,8 @@ public sealed class CarsService
         string Status,
         int Quantity,
         string ImageUrl,
-        string Supplier);
+        string Supplier,
+        List<string> Images);
 
     public async Task<PaginatedResult<CarListItemDto>> GetCarsAsync(int page, int limit, string? search, string? status)
     {
@@ -77,7 +79,8 @@ public sealed class CarsService
             c.SellingPrice,
             GetStatus(c),
             c.Inventory?.Quantity ?? 0,
-            string.Empty
+            c.Images != null && c.Images.Any() ? c.Images.First() : string.Empty,
+            c.Images ?? new List<string>()
         )).ToList();
 
         return new PaginatedResult<CarListItemDto>(items, total, page, limit);
@@ -105,35 +108,83 @@ public sealed class CarsService
             car.SellingPrice,
             GetStatus(car),
             car.Inventory?.Quantity ?? 0,
-            string.Empty,
-            car.Supplier?.Name ?? string.Empty
+            car.Images != null && car.Images.Any() ? car.Images.First() : string.Empty,
+            car.Supplier?.Name ?? string.Empty,
+            car.Images ?? new List<string>()
         );
     }
 
-    public async Task<Car> CreateCarAsync(Car car)
+    public async Task<Car> CreateCarAsync(CarRequestDto dto)
     {
+        var car = new Car
+        {
+            Brand = dto.Make,
+            Model = dto.Model,
+            Year = dto.Year,
+            SellingPrice = dto.Price,
+            PurchasePrice = dto.Price * 0.8m,
+            IsAvailable = dto.Status == "Available",
+            Vin = string.IsNullOrWhiteSpace(dto.Vin) ? string.Empty : dto.Vin.Trim().ToUpperInvariant(),
+            Color = dto.Color,
+            Images = (dto.Images != null && dto.Images.Any())
+                ? dto.Images
+                : (!string.IsNullOrWhiteSpace(dto.ImageUrl) ? new List<string> { dto.ImageUrl } : new List<string>())
+        };
+
         _context.Cars.Add(car);
         await _context.SaveChangesAsync();
+
+        var inventory = new Inventory
+        {
+            CarId = car.Id,
+            Quantity = dto.Quantity,
+            Location = "Showroom A",
+            LastUpdated = DateTime.UtcNow
+        };
+        _context.Inventories.Add(inventory);
+        await _context.SaveChangesAsync();
+
         return car;
     }
 
-    public async Task<Car?> UpdateCarAsync(int id, Car updates)
+    public async Task<Car?> UpdateCarAsync(int id, CarRequestDto dto)
     {
-        var car = await _context.Cars.FindAsync(id);
+        var car = await _context.Cars
+            .Include(c => c.Inventory)
+            .FirstOrDefaultAsync(c => c.Id == id);
+            
         if (car is null)
         {
             return null;
         }
 
-        car.Brand = updates.Brand;
-        car.Model = updates.Model;
-        car.Year = updates.Year;
-        car.Color = updates.Color;
-        car.Vin = updates.Vin;
-        car.PurchasePrice = updates.PurchasePrice;
-        car.SellingPrice = updates.SellingPrice;
-        car.IsAvailable = updates.IsAvailable;
-        car.SupplierId = updates.SupplierId;
+        car.Brand = dto.Make;
+        car.Model = dto.Model;
+        car.Year = dto.Year;
+        car.SellingPrice = dto.Price;
+        car.IsAvailable = dto.Status == "Available";
+        car.Vin = string.IsNullOrWhiteSpace(dto.Vin) ? string.Empty : dto.Vin.Trim().ToUpperInvariant();
+        car.Color = dto.Color;
+        car.Images = (dto.Images != null && dto.Images.Any())
+            ? dto.Images
+            : (!string.IsNullOrWhiteSpace(dto.ImageUrl) ? new List<string> { dto.ImageUrl } : new List<string>());
+
+        if (car.Inventory is not null)
+        {
+            car.Inventory.Quantity = dto.Quantity;
+            car.Inventory.LastUpdated = DateTime.UtcNow;
+        }
+        else
+        {
+            car.Inventory = new Inventory
+            {
+                CarId = car.Id,
+                Quantity = dto.Quantity,
+                Location = "Showroom A",
+                LastUpdated = DateTime.UtcNow
+            };
+            _context.Inventories.Add(car.Inventory);
+        }
 
         await _context.SaveChangesAsync();
         return car;
@@ -150,6 +201,20 @@ public sealed class CarsService
         _context.Cars.Remove(car);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<Car?> AddCarImagesAsync(int id, List<string> imageUrls)
+    {
+        var car = await _context.Cars.FirstOrDefaultAsync(c => c.Id == id);
+        if (car == null) return null;
+
+        var currentImages = car.Images ?? new List<string>();
+        var updatedImages = new List<string>(currentImages);
+        updatedImages.AddRange(imageUrls);
+        car.Images = updatedImages;
+        
+        await _context.SaveChangesAsync();
+        return car;
     }
 
     private static string GetStatus(Car car)

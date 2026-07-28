@@ -17,6 +17,9 @@ export interface Car {
   status: 'Available' | 'Sold' | 'Pending';
   quantity: number;
   imageUrl?: string;
+  brand?: string;
+  color?: string;
+  images?: string[];
 }
 
 // Sales Interfaces
@@ -87,6 +90,36 @@ export interface FinanceMetrics {
   inventoryValue: number;
 }
 
+export interface StatusCounts {
+  totalCars: number;
+  availableCars: number;
+  soldCars: number;
+  pendingCars: number;
+  completedSales: number;
+  pendingSales: number;
+  cancelledSales: number;
+  pendingOrders: number;
+  approvedOrders: number;
+  inTransitOrders: number;
+  deliveredOrders: number;
+  cancelledOrders: number;
+}
+
+export interface DashboardMetrics {
+  kpis: FinanceMetrics & {
+    carsSold: number;
+    activeInventory: number;
+    pendingOrders: number;
+    totalRevenue: number;
+    monthlyProfit: number;
+    procurementCost: number;
+  };
+  salesTrend: Array<{ name: string; sales: number }>;
+  revenueVsExpenses: Array<{ name: string; revenue: number; expenses: number }>;
+  vehicleCategories: Array<{ name: string; value: number; color: string }>;
+  statusCounts: StatusCounts;
+}
+
 export interface Transaction {
   id: string;
   date: string;
@@ -101,4 +134,28 @@ export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+}
+
+// Image Verification Interfaces
+export interface CarImageVerification {
+  id: number;
+  carId: number;
+  car?: Car;
+  chassisNumber: string;
+  status: 'Passed' | 'Failed' | 'Pending Review';
+  dropboxPath: string;
+  resultNotes: string;
+  mismatchedFiles?: string;
+  checkedAt: string;
+  overallScore?: number;
+  confidence?: string;
+  decision?: string;
+  matches?: Array<{
+    applicationImage: string;
+    dropboxImageName: string;
+    dropboxImagePath: string;
+    similarity: number;
+    decision: string;
+    explanation?: string;
+  }>;
 }
