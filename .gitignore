@@ -1,0 +1,12 @@
+.env
+.env.local
+.env.*.local
+dist/
+node_modules/
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.idea/
+.vscode/

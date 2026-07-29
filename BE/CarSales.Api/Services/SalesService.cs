@@ -103,6 +103,24 @@ public sealed class SalesService
         }
 
         _context.Sales.Add(sale);
+
+        if (sale.Status == "Completed")
+        {
+            var car = await _context.Cars
+                .Include(c => c.Inventory)
+                .FirstOrDefaultAsync(c => c.Id == sale.CarId);
+
+            if (car is not null)
+            {
+                car.IsAvailable = false;
+                if (car.Inventory is not null)
+                {
+                    car.Inventory.Quantity = Math.Max(0, car.Inventory.Quantity - 1);
+                    car.Inventory.LastUpdated = DateTime.UtcNow;
+                }
+            }
+        }
+
         await _context.SaveChangesAsync();
         return sale;
     }

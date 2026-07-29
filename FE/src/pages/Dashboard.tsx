@@ -77,6 +77,20 @@ export function Dashboard() {
   }));
   const revenueVsExpenses = data?.revenueVsExpenses || [];
   const vehicleCategories = data?.vehicleCategories || [];
+  const statusCounts = data?.statusCounts || {
+    totalCars: 0,
+    availableCars: 0,
+    soldCars: 0,
+    pendingCars: 0,
+    completedSales: 0,
+    pendingSales: 0,
+    cancelledSales: 0,
+    pendingOrders: 0,
+    approvedOrders: 0,
+    inTransitOrders: 0,
+    deliveredOrders: 0,
+    cancelledOrders: 0
+  };
 
   return (
     <motion.div 
@@ -154,6 +168,96 @@ export function Dashboard() {
           <CardContent>
             <div className="text-2xl font-bold">LKR {(kpis.procurementCost ?? kpis.expenses ?? 0).toLocaleString()}</div>
             <p className="text-xs text-rose-500 mt-1">Slightly above budget</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* CEO Status Overview Section */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {/* Car Inventory Breakdown */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold text-slate-600 dark:text-slate-400">Car Inventory Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-xs font-medium text-slate-500">Total Vehicles</span>
+                <span className="text-base font-bold text-slate-800 dark:text-slate-200">{statusCounts.totalCars ?? 0}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-center pt-1">
+                <div className="bg-green-50 dark:bg-green-950/20 p-2 rounded-md">
+                  <div className="text-[10px] text-green-600 dark:text-green-400 font-medium">Available</div>
+                  <div className="text-base font-bold text-green-700 dark:text-green-300">{statusCounts.availableCars ?? 0}</div>
+                </div>
+                <div className="bg-amber-50 dark:bg-amber-950/20 p-2 rounded-md">
+                  <div className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">Pending</div>
+                  <div className="text-base font-bold text-amber-700 dark:text-amber-300">{statusCounts.pendingCars ?? 0}</div>
+                </div>
+                <div className="bg-slate-100 dark:bg-slate-800 p-2 rounded-md">
+                  <div className="text-[10px] text-slate-600 dark:text-slate-400 font-medium">Sold</div>
+                  <div className="text-base font-bold text-slate-700 dark:text-slate-300">{statusCounts.soldCars ?? 0}</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Sales Funnel Status */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold text-slate-600 dark:text-slate-400">Sales Status Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[90px] flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={[
+                  { name: 'Completed', count: statusCounts.completedSales ?? 0 },
+                  { name: 'Pending', count: statusCounts.pendingSales ?? 0 },
+                  { name: 'Cancelled', count: statusCounts.cancelledSales ?? 0 }
+                ]} layout="vertical" margin={{ left: -10, right: 10, top: 0, bottom: 0 }}>
+                  <XAxis type="number" hide />
+                  <YAxis dataKey="name" type="category" fontSize={10} axisLine={false} tickLine={false} width={75} />
+                  <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px', border: 'none', backgroundColor: 'var(--card)', fontSize: 11 }} />
+                  <Bar dataKey="count" radius={[0, 4, 4, 0]} barSize={12}>
+                    <Cell fill="#10b981" />
+                    <Cell fill="#f59e0b" />
+                    <Cell fill="#ef4444" />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Purchase Orders Status */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold text-slate-600 dark:text-slate-400">Procurement Pipeline</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-5 gap-1.5 text-center pt-2">
+              <div className="p-1 rounded bg-slate-50 dark:bg-slate-800">
+                <div className="text-[9px] text-slate-500 font-medium truncate">Pending</div>
+                <div className="text-sm font-bold text-slate-700 dark:text-slate-300">{statusCounts.pendingOrders ?? 0}</div>
+              </div>
+              <div className="p-1 rounded bg-blue-50 dark:bg-blue-950/20">
+                <div className="text-[9px] text-blue-600 dark:text-blue-400 font-medium truncate">Approved</div>
+                <div className="text-sm font-bold text-blue-700 dark:text-blue-300">{statusCounts.approvedOrders ?? 0}</div>
+              </div>
+              <div className="p-1 rounded bg-purple-50 dark:bg-purple-950/20">
+                <div className="text-[9px] text-purple-600 dark:text-purple-400 font-medium truncate">Transit</div>
+                <div className="text-sm font-bold text-purple-700 dark:text-purple-300">{statusCounts.inTransitOrders ?? 0}</div>
+              </div>
+              <div className="p-1 rounded bg-green-50 dark:bg-green-950/20">
+                <div className="text-[9px] text-green-600 dark:text-green-400 font-medium truncate">Delivered</div>
+                <div className="text-sm font-bold text-green-700 dark:text-green-300">{statusCounts.deliveredOrders ?? 0}</div>
+              </div>
+              <div className="p-1 rounded bg-red-50 dark:bg-red-950/20">
+                <div className="text-[9px] text-red-600 dark:text-red-400 font-medium truncate">Cancelled</div>
+                <div className="text-sm font-bold text-red-700 dark:text-red-300">{statusCounts.cancelledOrders ?? 0}</div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

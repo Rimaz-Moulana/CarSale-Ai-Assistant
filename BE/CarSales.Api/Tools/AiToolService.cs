@@ -13,6 +13,7 @@ public sealed class AiToolService
     private readonly ProcurementService _procurement;
     private readonly CarsService _cars;
     private readonly CustomersService _customers;
+    private readonly IVehicleImageMatchingService _matchingService;
 
     public AiToolService(
         FinanceService finance,
@@ -20,7 +21,8 @@ public sealed class AiToolService
         InventoryService inventory,
         ProcurementService procurement,
         CarsService cars,
-        CustomersService customers)
+        CustomersService customers,
+        IVehicleImageMatchingService matchingService)
     {
         _finance = finance;
         _sales = sales;
@@ -28,6 +30,7 @@ public sealed class AiToolService
         _procurement = procurement;
         _cars = cars;
         _customers = customers;
+        _matchingService = matchingService;
     }
 
     [Description("Retrieves a summary of financial metrics including revenue, expenses, profit, cash flow, outstanding payments, and inventory value.")]
@@ -106,5 +109,44 @@ Procurement summary:
         }
 
         return sb.ToString();
+    }
+
+    [Description("Runs an automated image similarity audit comparing database reference images against Dropbox images for a given VIN.")]
+    public async Task<string> RunVehicleImageMatchAsync([Description("The 17-character VIN of the vehicle to match.")] string vin)
+    {
+        try
+        {
+            var result = await _matchingService.MatchVehicleAsync(vin, CancellationToken.None);
+            if (result.Status == "FAILED")
+            {
+                return $"Vehicle image audit failed: {result.ErrorMessage}";
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"Image Match Audit completed for VIN: {result.Vin}");
+            sb.AppendLine($"- Overall Similarity: {result.OverallScore:P1}");
+            sb.AppendLine($"- Confidence: {result.Confidence}");
+            sb.AppendLine($"- Match Decision: {result.Decision}");
+            sb.AppendLine($"- Application Images: {result.ApplicationImageCount}");
+            sb.AppendLine($"- Dropbox Images: {result.DropboxImageCount}");
+            sb.AppendLine($"- High-Confidence Matches: {result.MatchedImageCount}");
+            sb.AppendLine($"- Review Required: {result.ReviewRequiredCount}");
+            sb.AppendLine();
+            sb.AppendLine("Matches Detail:");
+            foreach (var match in result.Matches)
+            {
+                sb.AppendLine($"- Ref: {Path.GetFileName(match.ApplicationImage)} matches {match.DropboxImageName} with similarity {match.Similarity:P1} (Decision: {match.Decision})");
+                if (!string.IsNullOrEmpty(match.Explanation))
+                {
+                    sb.AppendLine($"  Explanation: {match.Explanation}");
+                }
+            }
+
+            return sb.ToString();
+        }
+        catch (Exception ex)
+        {
+            return $"Error performing image matching audit: {ex.Message}";
+        }
     }
 }

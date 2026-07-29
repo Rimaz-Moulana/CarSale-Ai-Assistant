@@ -36,10 +36,19 @@ public class ProcurementController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<PurchaseOrder>> CreatePurchaseOrder(PurchaseOrder purchaseOrder)
+    public async Task<ActionResult<object>> CreatePurchaseOrder(CarSales.Api.DTOs.CreatePurchaseOrderRequestDto dto)
     {
-        var created = await _service.CreatePurchaseOrderAsync(purchaseOrder);
-        return CreatedAtAction(nameof(GetPurchaseOrders), new { id = created.Id }, created);
+        var created = await _service.CreatePurchaseOrderAsync(dto);
+        var result = new
+        {
+            id = created.Id,
+            poNumber = $"PO{created.Id:D6}",
+            supplier = dto.Supplier,
+            status = created.Status,
+            expectedDelivery = created.OrderDate.ToString("yyyy-MM-dd"),
+            totalCost = created.TotalAmount
+        };
+        return CreatedAtAction(nameof(GetPurchaseOrders), new { id = created.Id }, result);
     }
 }
 

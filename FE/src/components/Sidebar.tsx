@@ -10,6 +10,7 @@ import {
   ClipboardList, 
   PieChart, 
   LineChart, 
+  Image,
   Bot, 
   Settings,
   LogOut
@@ -27,6 +28,7 @@ const navItems = [
   { name: 'Inventory', path: '/inventory', icon: ClipboardList },
   { name: 'Finance', path: '/finance', icon: PieChart },
   { name: 'Reports', path: '/reports', icon: LineChart },
+  { name: 'Image Verification', path: '/verification', icon: Image },
   { name: 'CEO AI Assistant', path: '/ai-assistant', icon: Bot },
   { name: 'Settings', path: '/settings', icon: Settings },
 ];

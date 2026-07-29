@@ -88,6 +88,8 @@ services:
     restart: unless-stopped
     ports:
       - "5099:8080"
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     networks:
@@ -96,6 +98,8 @@ services:
       - postgres
       - ollama
       - keycloak
+    volumes:
+      - ./BE/CarSales.Api/wwwroot:/app/wwwroot
 
   frontend:
     build:

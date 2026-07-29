@@ -30,11 +30,26 @@ public sealed class FinanceService
     public sealed record FinanceChartSeriesPoint(string Name, decimal In, decimal Out, decimal InAmount = 0, decimal OutAmount = 0);
     public sealed record ExpenseBreakdownItem(string Name, decimal Value, string Color);
 
+    public sealed record StatusCountsDto(
+        int TotalCars,
+        int AvailableCars,
+        int SoldCars,
+        int PendingCars,
+        int CompletedSales,
+        int PendingSales,
+        int CancelledSales,
+        int PendingOrders,
+        int ApprovedOrders,
+        int InTransitOrders,
+        int DeliveredOrders,
+        int CancelledOrders);
+
     public sealed record FinanceDashboardDto(
         FinanceMetricsDto Kpis,
         IReadOnlyList<FinanceChartPoint> SalesTrend,
         IReadOnlyList<RevenueExpensesPoint> RevenueVsExpenses,
-        IReadOnlyList<VehicleCategoryItem> VehicleCategories);
+        IReadOnlyList<VehicleCategoryItem> VehicleCategories,
+        StatusCountsDto StatusCounts);
 
     public sealed record RevenueExpensesPoint(string Name, decimal Revenue, decimal Expenses);
     public sealed record VehicleCategoryItem(string Name, int Value, string Color);
@@ -202,7 +217,31 @@ public sealed class FinanceService
             .Reverse()
             .ToList();
 
-        return new FinanceDashboardDto(metrics, salesTrendData, revenueVsExpensesData, vehicleCategories);
+        // Car Statuses
+        var totalCars = await _context.Cars.CountAsync();
+        var availableCars = await _context.Cars.CountAsync(c => c.IsAvailable && !c.Sales.Any(s => s.Status == "Pending"));
+        var soldCars = await _context.Cars.CountAsync(c => !c.IsAvailable && c.Sales.Any(s => s.Status == "Completed"));
+        var pendingCars = await _context.Cars.CountAsync(c => c.Sales.Any(s => s.Status == "Pending"));
+
+        // Sales Statuses
+        var completedSales = await _context.Sales.CountAsync(s => s.Status == "Completed");
+        var pendingSales = await _context.Sales.CountAsync(s => s.Status == "Pending");
+        var cancelledSales = await _context.Sales.CountAsync(s => s.Status == "Cancelled");
+
+        // Purchase Order Statuses
+        var pendingOrdersCount = await _context.PurchaseOrders.CountAsync(po => po.Status == "Pending");
+        var approvedOrders = await _context.PurchaseOrders.CountAsync(po => po.Status == "Approved");
+        var inTransitOrders = await _context.PurchaseOrders.CountAsync(po => po.Status == "In Transit");
+        var deliveredOrders = await _context.PurchaseOrders.CountAsync(po => po.Status == "Delivered");
+        var cancelledOrders = await _context.PurchaseOrders.CountAsync(po => po.Status == "Cancelled");
+
+        var statusCounts = new StatusCountsDto(
+            totalCars, availableCars, soldCars, pendingCars,
+            completedSales, pendingSales, cancelledSales,
+            pendingOrdersCount, approvedOrders, inTransitOrders, deliveredOrders, cancelledOrders
+        );
+
+        return new FinanceDashboardDto(metrics, salesTrendData, revenueVsExpensesData, vehicleCategories, statusCounts);
     }
 
     private static string GetCategoryColor(string category)

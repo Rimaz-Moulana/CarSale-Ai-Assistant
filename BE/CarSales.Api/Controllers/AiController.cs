@@ -135,5 +135,20 @@ public class AiController : ControllerBase
             );
         }
     }
+
+    [HttpGet("provider")]
+    public IActionResult GetProvider()
+    {
+        return Ok(new { provider = _agent.GetProvider() });
+    }
+
+    [HttpPost("provider")]
+    public IActionResult SetProvider([FromBody] ProviderRequest request)
+    {
+        _agent.SetProvider(request.Provider);
+        return Ok(new { provider = _agent.GetProvider() });
+    }
+
+    public sealed record ProviderRequest(string Provider);
 }
 

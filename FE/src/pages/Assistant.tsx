@@ -22,6 +22,8 @@ export function Assistant() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [provider, setProvider] = useState<string>('Ollama');
+  const [updatingProvider, setUpdatingProvider] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const loadSessions = async () => {
@@ -33,8 +35,33 @@ export function Assistant() {
     }
   };
 
+  const fetchProvider = async () => {
+    try {
+      const data = await AIChatService.getProvider();
+      setProvider(data.provider);
+    } catch (error) {
+      console.error("Failed to fetch LLM provider", error);
+    }
+  };
+
+  const handleProviderChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setUpdatingProvider(true);
+    try {
+      const data = await AIChatService.setProvider(value);
+      setProvider(data.provider);
+      toast.success(`LLM Switched to ${data.provider}`);
+    } catch (error) {
+      console.error("Failed to switch provider", error);
+      toast.error("Failed to switch LLM provider");
+    } finally {
+      setUpdatingProvider(false);
+    }
+  };
+
   useEffect(() => {
     loadSessions();
+    fetchProvider();
   }, []);
 
   const loadSession = async (id: string) => {
@@ -158,8 +185,19 @@ export function Assistant() {
               </div>
             </div>
           </div>
-          <div className="text-xs text-slate-500 font-medium px-2 py-1 rounded-md bg-muted">
-            Model: Enterprise-GPT-v4
+          <div className="flex items-center gap-2">
+            {updatingProvider && (
+              <span className="w-3.5 h-3.5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin shrink-0" />
+            )}
+            <select
+              value={provider}
+              onChange={handleProviderChange}
+              disabled={updatingProvider}
+              className="text-xs font-semibold text-slate-600 dark:text-slate-300 px-2.5 py-1.5 rounded-md bg-muted border border-border focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer select-none"
+            >
+              <option value="Ollama">Ollama (Llama 3.2)</option>
+              <option value="Gemini">Google Gemini (Cloud)</option>
+            </select>
           </div>
         </div>
 

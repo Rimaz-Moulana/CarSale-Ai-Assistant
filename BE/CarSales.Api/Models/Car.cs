@@ -15,5 +15,6 @@ public class Car
     public Supplier? Supplier { get; set; }
     public Inventory? Inventory { get; set; }
     public ICollection<Sale> Sales { get; set; } = new List<Sale>();
+    public List<string> Images { get; set; } = new();
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

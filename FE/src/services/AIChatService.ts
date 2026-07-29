@@ -44,4 +44,12 @@ export class AIChatService {
       sessionId
     });
   }
+
+  static async getProvider(): Promise<{ provider: string }> {
+    return apiClient.get<any, { provider: string }>('ai/provider');
+  }
+
+  static async setProvider(provider: string): Promise<{ provider: string }> {
+    return apiClient.post<any, { provider: string }>('ai/provider', { provider });
+  }
 }

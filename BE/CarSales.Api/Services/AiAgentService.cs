@@ -16,6 +16,9 @@ public sealed class AiAgentService
         _tools = tools;
     }
 
+    public string GetProvider() => _kernel.GetProvider();
+    public void SetProvider(string provider) => _kernel.SetProvider(provider);
+
     public async Task<string> ChatAsync(string message, IEnumerable<ChatMessageDto> history)
     {
         var finance = await _tools.GetFinanceSummaryAsync();

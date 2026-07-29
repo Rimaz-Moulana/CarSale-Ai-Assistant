@@ -15,7 +15,11 @@ export function DialogContent({ className, children, onClose }: { className?: st
   return (
     <div className={cn("relative w-full max-w-lg bg-card rounded-xl shadow-lg border border-border animate-in zoom-in-95 duration-200", className)}>
       {onClose && (
-        <button onClick={onClose} className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus:ring-2">
+        <button 
+          onClick={onClose} 
+          className="absolute right-4 top-4 rounded-full p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
+          aria-label="Close"
+        >
           <X className="h-4 w-4" />
         </button>
       )}

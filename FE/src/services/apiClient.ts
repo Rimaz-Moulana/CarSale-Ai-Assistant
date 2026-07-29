@@ -39,6 +39,13 @@ apiClient.interceptors.response.use(
     let errorMessage = 'An unexpected error occurred.';
     
     if (error.response) {
+      if (error.response.status === 401) {
+        console.warn('Session expired or unauthorized. Redirecting to login...');
+        keycloak.clearToken();
+        keycloak.login({ redirectUri: window.location.origin });
+        return new Promise(() => {}); // Block further processing of this request chain
+      }
+
       // The request was made and the server responded with a status code outside of 2xx
       const data = error.response.data as any;
       errorMessage = data?.message || data?.error || `Server Error: ${error.response.status}`;
